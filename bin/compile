@@ -35,7 +35,7 @@ else
 
   mkdir -p $CACHE_DIR/nix-mnt
   cd $CACHE_DIR/nix-mnt
-  fetch nix-${NIX_VERSION}.tar.bz2 http://hydra.nixos.org/build/17897595/download/1/${NIX_VERSION_FULL}.tar.bz2
+  fetch nix-${NIX_VERSION}.tar.bz2 https://nixos.org/releases/nix/nix-${NIX_VERSION}/nix-${NIX_VERSION}-x86_64-linux.tar.bz2
   tar xjf nix-${NIX_VERSION}.tar.bz2
   echo "Done extracting." | indent
   rm nix-${NIX_VERSION}.tar.bz2
