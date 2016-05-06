@@ -29,13 +29,16 @@ eval $(grep nix= ./install | head -n 1)
 
 export nix
 
-# define NIX_FILE, PROG_NAME, PROG_PROFILE, CLOSURE_NAME, and CLOSURE
-prog=$(prog_name_profile_closure)
-eval $prog
+topic "Attempting to install shell.nix"
+nix-env --install --prebuilt-only -f $BUILD_DIR/shell.nix
 
-cd $BUILD_DIR
+# # define NIX_FILE, PROG_NAME, PROG_PROFILE, CLOSURE_NAME, and CLOSURE
+# prog=$(prog_name_profile_closure)
+# eval $prog
 
-rm -f /tmp/closure.log
+# cd $BUILD_DIR
+
+# rm -f /tmp/closure.log
 
 topic "Attempting to download closure"
 try_download_closure
