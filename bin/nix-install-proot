@@ -31,6 +31,7 @@ export nix
 
 topic "Attempting to install shell.nix"
 nix-env -vvv -I $BUILD_DIR --install --prebuilt-only -f $BUILD_DIR/shell.nix
+nix-env -q \*
 
 # # define NIX_FILE, PROG_NAME, PROG_PROFILE, CLOSURE_NAME, and CLOSURE
 # prog=$(prog_name_profile_closure)
