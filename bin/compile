@@ -16,9 +16,11 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 
 # Before we do anything, move all the source code into a directory and don't allow modifying it
-mv $BUILD_DIR /tmp/src
+mv $BUILD_DIR /tmp/git-export
 mkdir -p $BUILD_DIR
-mv /tmp/src $BUILD_DIR/
+mv /tmp/git-export $BUILD_DIR/
+echo "removing \`.git'..."
+find $BUILD_DIR -name .git\* | xargs rm -rf
 
 source $DIR/script-common
 

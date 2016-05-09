@@ -30,9 +30,10 @@ eval $(grep nix= ./install | head -n 1)
 export nix
 
 topic "Attempting to install shell.nix"
-cat $(nix-instantiate -I $BUILD_DIR/src $BUILD_DIR/src/shell.nix)
-
-nix-env -I $BUILD_DIR/src --install -f $BUILD_DIR/src/shell.nix --option binary-caches http://52.50.40.204:3000
+SRC=$(nix-store --add-fixed sha256 --recursive $BUILD_DIR/git-export)
+echo $SRC
+cat $(nix-instantiate $SRC/shell.nix)
+nix-env --install -f $SRC/shell.nix --option binary-caches http://52.50.40.204:3000
 nix-env -q \*
 
 # # define NIX_FILE, PROG_NAME, PROG_PROFILE, CLOSURE_NAME, and CLOSURE

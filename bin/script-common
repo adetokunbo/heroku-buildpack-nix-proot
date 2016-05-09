@@ -64,10 +64,10 @@ suppress_locale_warnings() {
 }
 
 locate_nix_file() {
-  if [ -e $BUILD_DIR/src/shell.nix ]; then
-    echo "$BUILD_DIR/src/shell.nix"
-  elif [ -e $BUILD_DIR/src/default.nix ]; then
-    echo "$BUILD_DIR/src/default.nix"
+  if [ -e $BUILD_DIR/git-export/shell.nix ]; then
+    echo "$BUILD_DIR/git-export/shell.nix"
+  elif [ -e $BUILD_DIR/git-export/default.nix ]; then
+    echo "$BUILD_DIR/git-export/default.nix"
   else
     echo "No shell.nix or default.nix found!" | indent
     false
