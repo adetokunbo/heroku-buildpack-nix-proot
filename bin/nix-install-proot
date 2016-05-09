@@ -33,7 +33,7 @@ topic "Attempting to install shell.nix"
 SRC=$(nix-store --add-fixed sha256 --recursive $BUILD_DIR/git-export)
 echo $SRC
 cat $(nix-instantiate $SRC/shell.nix)
-nix-env --install -f $SRC/shell.nix --option binary-caches http://52.50.40.204:3000
+nix-env --install -f $SRC/shell.nix --option binary-caches $NIX_EXTRA_BINARY_CACHE
 nix-collect-garbage -d
 
 topic "Creating symbolic link to /nix in BUILD_DIR"
