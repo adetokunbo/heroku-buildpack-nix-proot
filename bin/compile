@@ -14,6 +14,12 @@ ENV_DIR=$3
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+
+# Before we do anything, move all the source code into a directory and don't allow modifying it
+mv $BUILD_DIR /tmp/src
+mkdir -p $BUILD_DIR
+mv /tmp/src $BUILD_DIR/
+
 source $DIR/script-common
 
 export_env_dir $ENV_DIR

@@ -64,10 +64,10 @@ suppress_locale_warnings() {
 }
 
 locate_nix_file() {
-  if [ -e $BUILD_DIR/shell.nix ]; then
-    echo "$BUILD_DIR/shell.nix"
-  elif [ -e $BUILD_DIR/default.nix ]; then
-    echo "$BUILD_DIR/default.nix"
+  if [ -e $BUILD_DIR/src/shell.nix ]; then
+    echo "$BUILD_DIR/src/shell.nix"
+  elif [ -e $BUILD_DIR/src/default.nix ]; then
+    echo "$BUILD_DIR/src/default.nix"
   else
     echo "No shell.nix or default.nix found!" | indent
     false
