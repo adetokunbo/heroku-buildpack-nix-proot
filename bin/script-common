@@ -88,44 +88,6 @@ prog_name_profile_closure() {
   CLOSURE=/tmp/\$CLOSURE_NAME"
 }
 
-
-check_for_s3() {
-  if [ -z "${NIX_S3_KEY:-}" ] || [ -z "${NIX_S3_SECRET:-}" ] || [ -z "${NIX_S3_BUCKET:-}" ]; then
-    topic "S3 info not set in configuration; closure cannot be loaded!"
-    echo "Make sure the following variables are set:" | indent
-    if [ -z "${NIX_S3_KEY:-}" ]; then echo "NIX_S3_KEY" | indent; fi
-    if [ -z "${NIX_S3_SECRET:-}" ]; then echo "NIX_S3_SECRET" | indent; fi
-    if [ -z "${NIX_S3_BUCKET:-}" ]; then echo "NIX_S3_BUCKET" | indent; fi
-    false
-  fi
-}
-
-try_download_closure() {
-  check_for_s3
-  export EC2_ACCESS_KEY=$NIX_S3_KEY
-  export EC2_SECRET_KEY=$NIX_S3_SECRET
- 
-  if [ -e /closures/$CLOSURE_NAME ]; then # spoof closure transfer
-    cp /closures/$CLOSURE_NAME $CLOSURE
-  else
-    set +e
-    $BUILD_DIR/bin/aws get $NIX_S3_BUCKET/nix-closures/$CLOSURE_NAME $CLOSURE 2>&1| indent
-    set -e
-  fi
-}
-
-upload_closure() {
-  check_for_s3
-  export EC2_ACCESS_KEY=$NIX_S3_KEY
-  export EC2_SECRET_KEY=$NIX_S3_SECRET
- 
-  if [ -d /closures ]; then # spoof closure transfer
-    cp $CLOSURE /closures/$CLOSURE_NAME
-  else
-    $BUILD_DIR/bin/aws put $NIX_S3_BUCKET/nix-closures/$CLOSURE_NAME $CLOSURE 2>&1| indent
-  fi
-}
-
 copy_custom_nix_config() {
   if [ -e $BUILD_DIR/.nixpkgs/config.nix ]; then
     mkdir -p $HOME/.nixpkgs
