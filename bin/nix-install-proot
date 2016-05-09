@@ -30,6 +30,8 @@ eval $(grep nix= ./install | head -n 1)
 export nix
 
 topic "Attempting to install shell.nix"
+cat $(nix-instantiate -I $BUILD_DIR $BUILD_DIR/shell.nix)
+
 nix-env -v -I $BUILD_DIR --install -f $BUILD_DIR/shell.nix --option binary-caches http://52.50.40.204:3000
 nix-env -q \*
 
