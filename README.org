@@ -1,0 +1,115 @@
+#+TITLE: heroku-buildpack-nix-hydra
+
+This buildpack installs software using the [[https://nixos.org/nix][Nix]] package manager. The software is
+assumed to have been built by [[https://nixos.org/hydra][Hydra]], leading to speedy and predictable
+deployments that do no compilation of their own.
+
+The resulting app must be run within PRoot, incurring a performance penalty.
+
+* Usage
+
+Create a Procfile something like this (run_proot.sh will be created by the build
+scripts):
+
+#+BEGIN_SRC bash
+web: run_proot.sh myapp
+#+END_SRC
+
+Then create your application on Heroku, setting the location of your Hydra
+server:
+
+#+BEGIN_SRC bash
+heroku create -b https://github.com/ocharles/heroku-buildpack-nix-hydra.git
+heroku config:set NIX_EXTRA_BINARY_CACHE=http://hydra.acme.net:3000
+#+END_SRC
+
+If you are using =nix-serve= or another way to provide a binary cache, simply
+provide the binary cache URL in place of the Hydra url.
+
+
+* Hydra Configuration
+
+Next, you need to configure your Hydra instance. The full details are outside
+the scope of this readme, but you shouldn't need more than the following
+(in =release.nix=) to get started:
+
+#+BEGIN_SRC nix
+{
+  my-project = import <my-project/shell.nix>;
+}
+#+END_SRC
+
+Add a new input to this jobset called =my-project=.
+
+
+* Project Configuration
+
+Your project now needs a fully self-contained Nix expression to build it.
+Assuming you already have a normal =default.nix= build function, you can work
+with a =shell.nix= expression such as:
+
+#+BEGIN_SRC nix
+{
+  nixpkgs ?
+    let
+      inherit (import <nixpkgs> {}) fetchFromGitHub;
+    in
+      import
+        ( fetchFromGitHub
+          {
+            owner = "NixOS";
+            repo = "nixpkgs";
+            rev = "3f96280da0ebc578599130c55c283036b51a9e91";
+            sha256 = "1sv8rznqna02z642hfjykdr9xjn228932jkc03y8a4rqplqqg6l1";
+          }
+        ) { config.allowUnfree = true; }
+}:
+
+let
+
+  inherit (nixpkgs) pkgs;
+
+in pkgs.callPackage ./. {};
+#+END_SRC
+
+Notice that =nixpkgs= is explicitly provided inside this expression, to
+maximize reproducibility.
+
+
+* Deployment
+
+Push your application to the Git remote that Hydra is configured to build
+from. Once the build has completed, you can perform a deployment by pushing
+to your Heroku remote:
+
+#+BEGIN_SRC bash
+git push heroku master
+#+END_SRC
+
+
+* Considerations, gotchas and implementation details
+
+For this to work, it's essential that you get identical Nix store paths during
+Heroku deployment. Which is easier said than done. The main gotcha seems to be
+that whenever you refer to a path in a Nix file, a copy operation happens
+within the Nix store, /even if/ that file is already in the Nix store.
+
+Why is this a problem? The first thing Hydra does is pull the Git repository
+down, and inserts it straight into the Nix store. This means that
+=<my-project>= in the original example is going to expand to something like
+=/nix/store/deadbeef33333-git-export=. However, in =shell.nix= for
+=my-project= we refer to =./.=, which causes a copy operation, which means
+a path like =/nix/store/new-sha-here-deadbeef33333-git-export=.
+
+This buildpack tries to take care of that by essentially copying what Hydra
+does - the =$BUILD_DIR= is immediately inserted into the Nix store, and all
+subsequent evaluation is derived from that. However, if you keep finding that
+Heroku builds rather than downloads from Hydra, drop me a message and let's
+see if we can figure out what's going wrong.
+
+
+* Thanks
+
+This work builds on top of [[https://github.com/corajr/heroku-buildpack-nix-proot][Cora Johnson-Roberson's =heroku-buildpack-nix-proot=]]
+build pack. Many thanks for doing the initial exploration into this.  Also, I
+send my thanks to those who made Cora's original work possible.
