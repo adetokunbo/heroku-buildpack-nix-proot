@@ -47,10 +47,6 @@ export nix=$nix
 export PATH=$REAL_APP_DIR/.nix-profile/bin:$REAL_APP_DIR/bin:\$PATH
 EOF
 
-topic "Copying build scripts"
-cp -f $DIR/build $DIR/build-proot $DIR/script-common $BUILD_DIR/bin/
-chmod u+x $BUILD_DIR/bin/build
-
 topic "Creating run_in_proot.sh"
 cat <<EOF > $BUILD_DIR/bin/run_in_proot.sh
 #!/bin/bash
