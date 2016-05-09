@@ -61,6 +61,8 @@ $BUILD_DIR/bin/proot -b $NIX_ROOT_PATH:/nix bash $DIR/nix-install-proot $BUILD_D
 topic "Copying nix to BUILD_DIR, excluding patterns in .slugexclude"
 mkdir -p $BUILD_DIR/nix-mnt
 rsync -a $NIX_MNT/ $BUILD_DIR/nix-mnt
+mv $BUILD_DIR/git-export/Procfile $BUILD_DIR/
+rm -r $BUILD_DIR/git-export
 
 topic "Make sure your Procfile includes run_proot.sh,"
 echo "like so:" | indent
