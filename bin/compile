@@ -24,6 +24,9 @@ find $BUILD_DIR -name .git\* | xargs rm -rf
 
 source $DIR/script-common
 
+export NIX_MNT=$CACHE_DIR/nix-mnt
+export NIX_ROOT_PATH=$NIX_MNT/$NIX_VERSION_FULL
+
 export_env_dir $ENV_DIR
 
 mkdir -p $CACHE_DIR/bin
@@ -54,15 +57,11 @@ topic "Copying nix to $NIX_ROOT_PATH"
 mkdir -p $NIX_ROOT_PATH
 rsync -a $NIX_ROOT_CACHE_PATH/ $NIX_ROOT_PATH
 
-ls -al $BUILD_DIR
-
 $BUILD_DIR/bin/proot -b $NIX_ROOT_PATH:/nix bash $DIR/nix-install-proot $BUILD_DIR
 
-topic "Copying nix to BUILD_DIR, excluding patterns in .slugexclude"
-mkdir -p $BUILD_DIR/nix-mnt
-rsync -a $NIX_MNT/ $BUILD_DIR/nix-mnt
+topic "Cleaning up $BUILD_DIR"
 mv $BUILD_DIR/git-export/Procfile $BUILD_DIR/
-rm -r $BUILD_DIR/git-export
+rm -fr $BUILD_DIR/git-export
 
 topic "Make sure your Procfile includes run_proot.sh,"
 echo "like so:" | indent

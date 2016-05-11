@@ -2,8 +2,6 @@
 
 export NIX_VERSION=1.11.2
 export NIX_VERSION_FULL=nix-$NIX_VERSION-x86_64-linux
-export NIX_MNT=/tmp/nix-mnt
-export NIX_ROOT_PATH=$NIX_MNT/$NIX_VERSION_FULL
 export USER=$(whoami)
 
 indent() {
@@ -72,20 +70,6 @@ locate_nix_file() {
     echo "No shell.nix or default.nix found!" | indent
     false
   fi
-}
-
-prog_name_profile_closure() {
-  if [ -z "${BUILD_DIR:-}" ]; then
-    echo "BUILD_DIR not set! Can't locate .nix file." | indent
-    false
-  fi
-  export BUILD_DIR
-  export nix_file=$(locate_nix_file)
-  echo "export NIX_FILE=$nix_file;
-  export PROG_NAME=\$(nix-env -qa -f "$nix_file" | head -n 1);
-  PROG_PROFILE=/nix/var/nix/profiles/\$PROG_NAME;
-  CLOSURE_NAME=\$PROG_NAME.closure;
-  CLOSURE=/tmp/\$CLOSURE_NAME"
 }
 
 copy_custom_nix_config() {

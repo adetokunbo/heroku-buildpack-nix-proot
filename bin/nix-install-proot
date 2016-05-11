@@ -25,17 +25,21 @@ source $HOME/.nix-profile/etc/profile.d/nix.sh
 export PATH=$HOME/.nix-profile/bin:$PATH
 
 # set $nix to the hash of the nix version in store
-eval $(grep nix= ./install | head -n 1)
+eval $(grep nix= /nix/install | head -n 1)
 
 export nix
 
 topic "Attempting to install shell.nix"
 SRC=$(nix-store --add-fixed sha256 --recursive $BUILD_DIR/git-export)
-nix-env --install -f $SRC/shell.nix --option binary-caches $NIX_EXTRA_BINARY_CACHE
-nix-collect-garbage -d
+OUT=$(nix-build $SRC/shell.nix --no-out-link --option binary-caches $NIX_EXTRA_BINARY_CACHE)
+CLOSURE=$()
 
-topic "Creating symbolic link to /nix in BUILD_DIR"
-ln -s /nix/var/nix/profiles/default $BUILD_DIR/.nix-profile
+topic "Copying closure"
+mkdir -p $BUILD_DIR/nix/store
+nix-store -qR "$OUT" | while read req
+do
+    rsync -a $req $BUILD_DIR/nix/store/
+done
 
 topic "Creating .profile.d"
 mkdir -p $BUILD_DIR/.profile.d
@@ -48,11 +52,7 @@ EOF
 topic "Creating run_in_proot.sh"
 cat <<EOF > $BUILD_DIR/bin/run_in_proot.sh
 #!/bin/bash
-
-set -e
-test -d /nix && test -d $REAL_APP_DIR/.nix-profile
-source $REAL_APP_DIR/.nix-profile/etc/profile.d/nix.sh
-
+export PATH=$OUT/bin:\$PATH
 CMD=\$1
 \$CMD "\${@:2}"
 EOF
@@ -63,8 +63,7 @@ topic "Creating run_proot.sh"
 APP_NIX_ROOT_PATH=$REAL_APP_DIR/nix-mnt/$NIX_VERSION_FULL
 cat <<EOF > $BUILD_DIR/bin/run_proot.sh
 #!/usr/bin/env bash
-
-$REAL_APP_DIR/bin/proot -b $APP_NIX_ROOT_PATH:/nix bash $REAL_APP_DIR/bin/run_in_proot.sh "\$@"
+$REAL_APP_DIR/bin/proot -b $REAL_APP_DIR/nix:/nix bash $REAL_APP_DIR/bin/run_in_proot.sh "\$@"
 EOF
 
 chmod u+x $BUILD_DIR/bin/run_proot.sh
