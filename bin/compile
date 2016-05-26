@@ -55,7 +55,7 @@ fi
 
 topic "Copying nix to $NIX_ROOT_PATH"
 mkdir -p $NIX_ROOT_PATH
-rsync -a $NIX_ROOT_CACHE_PATH/ $NIX_ROOT_PATH
+rsync -av $NIX_ROOT_CACHE_PATH/ $NIX_ROOT_PATH
 
 $BUILD_DIR/bin/proot -b $NIX_ROOT_PATH:/nix bash $DIR/nix-install-proot $BUILD_DIR
 
