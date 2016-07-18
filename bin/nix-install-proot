@@ -29,9 +29,9 @@ eval $(grep nix= /nix/install | head -n 1)
 
 export nix
 
-topic "Attempting to install shell.nix"
+topic "Attempting to install deploy.nix"
 SRC=$(nix-store --add-fixed sha256 --recursive $BUILD_DIR/git-export)
-OUT=$(nix-build $SRC/shell.nix --no-out-link --option binary-caches $NIX_EXTRA_BINARY_CACHE)
+OUT=$(nix-build $SRC/deploy.nix --no-out-link --option binary-caches $NIX_EXTRA_BINARY_CACHE)
 CLOSURE=$()
 
 topic "Copying closure"

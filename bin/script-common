@@ -61,17 +61,6 @@ suppress_locale_warnings() {
   export LC_ALL="C"
 }
 
-locate_nix_file() {
-  if [ -e $BUILD_DIR/git-export/shell.nix ]; then
-    echo "$BUILD_DIR/git-export/shell.nix"
-  elif [ -e $BUILD_DIR/git-export/default.nix ]; then
-    echo "$BUILD_DIR/git-export/default.nix"
-  else
-    echo "No shell.nix or default.nix found!" | indent
-    false
-  fi
-}
-
 copy_custom_nix_config() {
   if [ -e $BUILD_DIR/.nixpkgs/config.nix ]; then
     mkdir -p $HOME/.nixpkgs
