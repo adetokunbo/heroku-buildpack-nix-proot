@@ -36,7 +36,7 @@ CLOSURE=$()
 
 topic "Copying closure"
 mkdir -p $BUILD_DIR/nix/store
-nix-store -qR "$OUT" | while read req
+nix-store -qR "$OUT" | while read -r req
 do
     rsync -a $req $BUILD_DIR/nix/store/
 done
