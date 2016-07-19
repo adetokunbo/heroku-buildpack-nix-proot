@@ -36,7 +36,7 @@ CLOSURE=$()
 
 topic "Copying closure"
 mkdir -p $BUILD_DIR/nix/store
-nix-store -qR "$OUT" | while read -r req
+echo "$OUT" | ( while read -r outl || [[ -n "$outl" ]] ; do nix-store -qR $outl ; done ) | while read -r req
 do
     rsync -a $req $BUILD_DIR/nix/store/
 done
@@ -55,12 +55,15 @@ if hash heroku-compile-hook 2>/dev/null; then
 fi
 
 topic "Creating run_in_proot.sh"
-cat <<EOF > $BUILD_DIR/bin/run_in_proot.sh
+(
+    outapi=$(echo "$OUT" | grep circuithub-api)
+    cat <<EOF > $BUILD_DIR/bin/run_in_proot.sh
 #!/bin/bash
-export PATH=$OUT/bin:\$PATH
+export PATH=$outapi/bin:\$PATH
 CMD=\$1
 \$CMD "\${@:2}"
 EOF
+)
 
 chmod u+x $BUILD_DIR/bin/run_in_proot.sh
 
