@@ -49,6 +49,11 @@ export nix=$nix
 export PATH=$REAL_APP_DIR/.nix-profile/bin:$REAL_APP_DIR/bin:\$PATH
 EOF
 
+if hash heroku-compile-hook 2>/dev/null; then
+    topic "Running heroku-compile-hook"
+    heroku-compile-hook
+fi
+
 topic "Creating run_in_proot.sh"
 cat <<EOF > $BUILD_DIR/bin/run_in_proot.sh
 #!/bin/bash
