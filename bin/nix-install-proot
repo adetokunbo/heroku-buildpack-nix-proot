@@ -29,7 +29,7 @@ eval $(grep nix= /nix/install | head -n 1)
 
 export nix
 
-topic "Evaluate deploy.nix"
+topic "Evaluating deploy.nix"
 SRC=$(nix-store --add-fixed sha256 --recursive $BUILD_DIR/git-export)
 OUT=$(nix-build $SRC/deploy.nix --no-out-link --option binary-caches $NIX_EXTRA_BINARY_CACHE)
 CLOSURE=$()
@@ -49,10 +49,13 @@ export nix=$nix
 export PATH=$REAL_APP_DIR/.nix-profile/bin:$REAL_APP_DIR/bin:\$PATH
 EOF
 
-if command -v heroku-compile-hook >/dev/null 2>&1; then
-    topic "Running heroku-compile-hook"
-    heroku-compile-hook
-fi
+(
+  compilehook=$(find $BUILD_DIR/nix/store -name heroku-compile-hook -type f)
+  if [ -x $compilehook ] ; then
+      topic "Running compile hook at $compilehook"
+      source $compilehook
+  fi
+)
 
 topic "Creating run_in_proot.sh"
 (
