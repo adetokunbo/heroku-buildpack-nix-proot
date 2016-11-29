@@ -34,6 +34,7 @@ nix-channel --update
 
 topic "Evaluating deploy.nix"
 SRC=$(nix-store --add-fixed sha256 --recursive $BUILD_DIR/git-export)
+cat $(nix-instantiate $SRC/deploy.nix | head -n1)
 OUT=$(nix-build $SRC/deploy.nix --no-out-link --option binary-caches $NIX_EXTRA_BINARY_CACHE)
 CLOSURE=$()
 
