@@ -40,9 +40,9 @@ export PATH=$BUILD_DIR/bin:$PATH
 export NIX_ROOT_CACHE_PATH=$CACHE_DIR/nix-mnt/$NIX_VERSION_FULL
 export REAL_APP_DIR=${REAL_APP_DIR:-/app}
 
-if [ -d "$NIX_ROOT_CACHE_PATH" ]; then
-  topic "nix $NIX_VERSION found in cache"
-else
+# if [ -d "$NIX_ROOT_CACHE_PATH" ]; then
+#   topic "nix $NIX_VERSION found in cache"
+# else
   topic "Downloading nix $NIX_VERSION to cache"
 
   mkdir -p $CACHE_DIR/nix-mnt
@@ -51,7 +51,7 @@ else
   tar xjf nix-${NIX_VERSION}.tar.bz2
   echo "Done extracting." | indent
   rm nix-${NIX_VERSION}.tar.bz2
-fi
+# fi
 
 topic "Copying nix to $NIX_ROOT_PATH"
 mkdir -p $NIX_ROOT_PATH
