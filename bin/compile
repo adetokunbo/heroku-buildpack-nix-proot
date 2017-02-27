@@ -32,7 +32,7 @@ export_env_dir $ENV_DIR
 mkdir -p $CACHE_DIR/bin
 
 topic "Downloading proot"
-download_and_install $CACHE_DIR $BUILD_DIR proot http://static.proot.me/proot-x86_64
+download_and_install $CACHE_DIR $BUILD_DIR proot https://github.com/proot-me/proot-static-build/blob/master/static/proot-x86_64?raw=true
 
 # add executables to path
 export PATH=$BUILD_DIR/bin:$PATH
