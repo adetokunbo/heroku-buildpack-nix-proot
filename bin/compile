@@ -20,7 +20,7 @@ mv $BUILD_DIR /tmp/git-export
 mkdir -p $BUILD_DIR
 mv /tmp/git-export $BUILD_DIR/
 echo "removing \`.git'..."
-find $BUILD_DIR -name .git\* | xargs rm -rf
+find $BUILD_DIR -name .git | xargs rm -rf
 
 source $DIR/script-common
 
