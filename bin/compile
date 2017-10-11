@@ -22,6 +22,7 @@ cd /tmp/git-export
 echo "removing \`.git' only..."
 cp gitmodules .gitmodules
 find . -name .git | xargs rm -rf
+rm -fr .profile.d
 
 mkdir -p $BUILD_DIR
 mv /tmp/git-export $BUILD_DIR/
