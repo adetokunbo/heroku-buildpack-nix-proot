@@ -32,10 +32,15 @@ export nix
 topic "Updating nixpkgs"
 nix-channel --update
 
-topic "Evaluating deploy.nix"
+topic "Adding git-export"
+find "$BUILD_DIR/git-export"
+(cd "$BUILD_DIR/git-export" ; find . | sort)
 SRC=$(nix-store --add-fixed sha256 --recursive $BUILD_DIR/git-export)
+
+topic "Evaluating deploy.nix"
 cat $(nix-instantiate $SRC/deploy.nix | head -n1)
-OUT=$(nix-build $SRC/deploy.nix --no-out-link --option binary-caches $NIX_EXTRA_BINARY_CACHE -A api -A heroku-compile-hook)
+NIX_BUILD_ARGS=$(for attr in $NIX_ATTRIBUTES; do echo -A $attr ; done)
+OUT=$(nix-build $SRC/deploy.nix --no-out-link --option binary-caches $NIX_EXTRA_BINARY_CACHE $NIX_BUILD_ARGS)
 CLOSURE=$()
 
 topic "Copying closure"
